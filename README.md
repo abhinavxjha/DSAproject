@@ -1,184 +1,252 @@
-# ⚡ Smart Energy Consumption Tracker
+<div align="center">
 
-> **Desktop C Application using GTK+ 3.0 GUI and Academic Data Structures**  
-> A practical energy auditing and electricity bill estimation desktop tool developed from scratch in C.
+<img src="assets/banner.svg" alt="Smart Energy Consumption Tracker" width="100%"/>
 
----
+<br/>
 
-## 📋 Table of Contents
-1. [Project Overview](#-project-overview)
-2. [Key Features](#-key-features)
-3. [Academic DSA Foundation](#-academic-dsa-foundation)
-4. [Mathematical & Energy Calculation Model](#-mathematical--energy-calculation-model)
-5. [Project File Structure](#-project-file-structure)
-6. [How to Run the Application](#-how-to-run-the-application)
-   - [Method 1: One-Click Launch (Easiest - No Terminal)](#method-1-one-click-launch-easiest--no-terminal)
-   - [Method 2: Windows PowerShell](#method-2-windows-powershell)
-   - [Method 3: Windows Command Prompt (CMD)](#method-3-windows-command-prompt-cmd)
-   - [Method 4: MSYS2 MinGW64 Shell & Makefile](#method-4-msys2-mingw64-shell--makefile)
-7. [How to Compile / Rebuild](#-how-to-compile--rebuild)
-8. [Benchmark Test Case (Hostel Room Example)](#-benchmark-test-case-hostel-room-example)
-9. [Project Limitations & PBL Context](#-project-limitations--pbl-context)
+![Language](https://img.shields.io/badge/language-C-00599C?style=for-the-badge&logo=c&logoColor=white)
+![GUI](https://img.shields.io/badge/GUI-GTK%203-4A86CF?style=for-the-badge&logo=gtk&logoColor=white)
+![Build](https://img.shields.io/badge/build-Makefile-43e97b?style=for-the-badge)
+![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20Windows%20(MSYS2)-lightgrey?style=for-the-badge)
+![License](https://img.shields.io/badge/license-MIT-yellow?style=for-the-badge)
 
----
+[![Stars](https://img.shields.io/github/stars/abhinavxjha/DSAproject?style=social)](https://github.com/abhinavxjha/DSAproject/stargazers)
+[![Forks](https://img.shields.io/github/forks/abhinavxjha/DSAproject?style=social)](https://github.com/abhinavxjha/DSAproject/network/members)
 
-## 🌟 Project Overview
+**A desktop app that shows where your electricity goes, built entirely from scratch in C with hand-written data structures and algorithms.**
 
-**Smart Energy Consumption Tracker** is a native desktop application written in **C** using the **GTK+ 3.0** GUI toolkit. It allows hostel students, homeowners, and small office administrators to:
-* Track electrical appliances in their rooms/offices.
-* Estimate **daily** and **monthly energy consumption (kWh / units)**.
-* Estimate the **monthly electricity bill (in ₹)** based on customizable per-unit electricity tariffs.
-* Identify the **highest energy-consuming appliance** and visualize its share of total consumption.
-* Compare appliance loads using an in-place **Merge Sort** algorithm.
-* Save and reload appliance configurations to a local plain text file (`data.txt`).
+[Features](#-features) · [Demo](#-demo) · [DSA Inside](#-data-structures--algorithms-inside) · [Quick Start](#-quick-start) · [Structure](#-project-structure) · [Roadmap](#-roadmap)
+
+</div>
 
 ---
 
-## 🚀 Key Features
+## About
 
-* **GUI Desktop Interface:** Clean GTK+ 3 interface with custom CSS styling, card containers, responsive tree view, and modal dialogs.
-* **Appliance Inventory (CRUD):** Add, view, edit, and delete appliances in real time.
-* **Dynamic Settings:** Instantly adjust electricity rate (default ₹8.00/unit) and calculation period (default 30 days) to recalculate all rows and summaries.
-* **DSA Search:** Locate any appliance quickly by numeric ID or name (case-insensitive substring match).
-* **DSA Sorting:** Sort appliances descending by energy consumption using an in-place Recursive Merge Sort.
-* **Dynamic Energy Summary:** Real-time metrics for total units, daily kWh, monthly kWh, estimated bill, and top consumer percentage.
-* **Explicit Persistence:** Appliances only save to `data.txt` when the user explicitly clicks **Save (data.txt)**.
-* **Robust Input Validation:** Rejects empty names, negative/zero wattage, zero quantity, and daily hours outside 0.1–24.0.
+Most people have no idea which appliance quietly drives up their electricity bill. **Smart Energy Consumption Tracker** lets you add your appliances (power rating, quantity, daily usage hours), then instantly shows daily and monthly consumption, estimated bill, a ranked list of the biggest energy hogs, and practical saving tips.
+
+It is also a **Data Structures & Algorithms showcase**. There is no `qsort`, no STL, and no external container library. The linked list, the sorting, the searching, and the undo stack are all implemented by hand with pointers and dynamic memory.
+
+> **Why this project?** It combines real-world usefulness with core computer science: pointers, `malloc`/`free`, file handling, algorithm design, and a real GTK graphical interface.
 
 ---
 
-## 🧠 Academic DSA Foundation
+## Features
 
-This project naturally applies core Data Structures and Algorithms concepts:
-
-| Concept | Implementation in Project | Complexity |
-| :--- | :--- | :--- |
-| **Singly Linked List** | Appliances stored as dynamically allocated nodes (`Appliance*`) linked via pointers | Space: $O(N)$ |
-| **Dynamic Memory Allocation** | Heap allocation and reclamation with `malloc()`, `free()`, and `free_appliance_list()` | Zero memory leaks |
-| **Manual Merge Sort** | Fast & slow pointer bisection (Tortoise & Hare) and recursive in-place merging | Time: $O(N \log N)$<br>Aux Space: $O(1)$ |
-| **Linear Search** | Traverses linked list matching node `id == query_id` or case-insensitive string match | Time: $O(N)$ |
-| **Linear Scan** | Single-pass accumulator to compute total metrics and identify highest consumer | Time: $O(N)$ |
-| **File Handling** | Formatted token parsing (`fopen`, `fgets`, `strtok`, `fprintf`, `fclose`) with `data.txt` | $O(N)$ records |
-
----
-
-## 📐 Mathematical & Energy Calculation Model
-
-1. **Power in Kilowatts:**
-   $$\text{Power (kW)} = \frac{\text{Power (Watts)}}{1000}$$
-
-2. **Daily Energy Consumption:**
-   $$\text{Daily Energy (kWh)} = \text{Power (kW)} \times \text{Quantity} \times \text{Hours Per Day}$$
-
-3. **Monthly Energy Consumption:**
-   $$\text{Monthly Energy (kWh)} = \text{Daily Energy (kWh)} \times \text{Billing Days}$$
-
-4. **Estimated Electricity Bill:**
-   $$\text{Estimated Bill (₹)} = \text{Monthly Energy (kWh)} \times \text{Rate per kWh}$$
-
-5. **Top Consumer Percentage Share:**
-   $$\text{Share (\%)} = \left(\frac{\text{Top Appliance Daily kWh}}{\text{Total Daily kWh}}\right) \times 100$$
-
-*(Note: $1\text{ kWh} = 1\text{ electricity unit}$. Default: ₹8.00/unit, 30 billing days).*
+| | Feature | Description |
+|---|---|---|
+| ➕ | **Appliance management** | Add, edit, delete, and view appliances (name, wattage, quantity, hours/day) |
+| ⚡ | **Instant calculations** | Daily and monthly kWh per appliance and in total |
+| 💰 | **Bill estimator** | Enter your tariff (Rs/unit) and get a projected monthly bill |
+| 🔍 | **Smart search** | Find any appliance by ID or name |
+| 📊 | **Sorting** | Rank appliances by consumption using a hand-written Merge Sort |
+| 📈 | **Statistics** | Total, average, highest, and lowest consumers |
+| 💡 | **Recommendations** | Rule-based tips (no AI/ML), such as flagging high-usage appliances |
+| ↩️ | **Undo** | Stack-based undo for your last actions |
+| 💾 | **Persistent storage** | Data is saved to `appliances.dat` and reloaded on start |
+| 📝 | **Report export** | Export a readable summary of your usage |
+| ✅ | **Input validation** | Rejects bad input so the data stays clean |
 
 ---
 
-## 📁 Project File Structure
+## Demo
+
+<div align="center">
+<img src="assets/energy-bars.svg" alt="Animated energy usage chart" width="90%"/>
+</div>
+
+> Add your own screenshots or a GIF here: `docs/screenshot-main.png`, `docs/demo.gif`
+
+### Sample calculation
+
+| Appliance | Qty | Watts | Hours/day | kWh/day |
+|---|:-:|:-:|:-:|:-:|
+| Fan | 2 | 75 | 10 | 1.500 |
+| LED Bulb | 3 | 9 | 6 | 0.162 |
+| AC | 1 | 1500 | 6 | 9.000 |
+| Laptop | 1 | 65 | 4 | 0.260 |
+| Mobile Chargers | 2 | 10 | 1 | 0.020 |
+| **Total** | | | | **10.942** |
 
 ```
-SmartEnergyTracker/
-│
-├── main.c        # GTK+ 3 GUI frontend: window, layouts, table, and user callbacks
-├── energy.c      # Pure C backend: linked list operations, Merge Sort, calculations, file I/O
-├── energy.h      # Header file: structs, constants, and function declarations
-├── data.txt      # Plain text persistence file for settings and appliances
-├── Makefile      # Build script for GCC and GTK3 compilation
-├── run.bat       # 1-click Windows launcher (sets runtime DLL path automatically)
-└── README.md     # Project documentation and run guide
+Daily consumption   : 10.942 kWh
+Monthly (30 days)   : 328.26 kWh
+Estimated bill      : Rs 2,626.08   (at Rs 8 / unit)
 ```
 
----
+The AC alone accounts for about 82% of the total, which is exactly the kind of insight the tracker surfaces.
 
-## 💻 How to Run the Application
-
-The compiled executable `SmartEnergyTracker.exe` requires the GTK3 runtime DLLs (`C:\msys64\mingw64\bin`). You can run it using any of the following methods:
-
-### Method 1: One-Click Launch (Easiest — No Terminal)
-1. Open Windows File Explorer and navigate to `e:\DSAproject2`.
-2. **Double-click `run.bat`**.
-3. The desktop GUI application will open immediately!
+**Formula:** `kWh/day = (watts × quantity × hours) / 1000`
 
 ---
 
-### Method 2: Windows PowerShell
-Open Windows PowerShell in the project directory and run:
-```powershell
-$env:Path = "C:\msys64\mingw64\bin;" + $env:Path
-.\SmartEnergyTracker.exe
+## Data Structures & Algorithms Inside
+
+| Concept | Where it's used | Complexity |
+|---|---|---|
+| **Singly Linked List** (manual) | Primary storage of all appliances | Insert at tail O(n), traverse O(n) |
+| **Linear Search** | Look up appliance by ID or name | O(n) |
+| **Merge Sort** (manual, no `qsort`) | Sort appliances by consumption | O(n log n) |
+| **Stack** | Undo operations | Push/Pop O(1) |
+| **Dynamic memory** | `malloc` / `free` for every node, with leak-safe cleanup | n/a |
+| **File I/O** | Save and load `appliances.dat` | O(n) |
+| **Pointers** | Node linking, callbacks, and GTK data passing | n/a |
+
+### How the data flows
+
+```mermaid
+flowchart LR
+    A[GTK GUI] --> B[Validation]
+    B --> C[(Linked List)]
+    C --> D[Calculations]
+    C --> E[Search]
+    C --> F[Merge Sort]
+    D --> G[Statistics]
+    G --> H[Recommendations]
+    D --> I[Bill Estimator]
+    C <--> J[(appliances.dat)]
+    G --> K[Report Export]
 ```
 
 ---
 
-### Method 3: Windows Command Prompt (CMD)
-Open Command Prompt in `e:\DSAproject2` and run:
-```cmd
-set PATH=C:\msys64\mingw64\bin;%PATH%
-SmartEnergyTracker.exe
-```
+## Quick Start
 
----
+### 1. Install dependencies
 
-### Method 4: MSYS2 MinGW64 Shell & Makefile
-Open the MSYS2 MinGW 64-bit shell (`C:\msys64\msys2_shell.cmd -mingw64`) and run:
+**Ubuntu / Debian**
 ```bash
-cd /e/DSAproject2
-make run
+sudo apt update
+sudo apt install build-essential pkg-config libgtk-3-dev
 ```
 
----
-
-## 🔨 How to Compile / Rebuild
-
-If you modify [`main.c`](file:///e:/DSAproject2/main.c), [`energy.c`](file:///e:/DSAproject2/energy.c), or [`energy.h`](file:///e:/DSAproject2/energy.h), recompile using either:
-
-### Via Makefile (Recommended):
-In MSYS2 MinGW64 terminal:
+**Fedora**
 ```bash
-cd /e/DSAproject2
-make clean
+sudo dnf install gcc make pkgconf-pkg-config gtk3-devel
+```
+
+**Windows (MSYS2 MinGW64)**
+```bash
+pacman -S mingw-w64-x86_64-gcc mingw-w64-x86_64-gtk3 mingw-w64-x86_64-pkg-config make
+```
+
+### 2. Clone and build
+
+```bash
+git clone https://github.com/abhinavxjha/DSAproject.git
+cd DSAproject
 make
 ```
 
-### Via Direct GCC Command:
+### 3. Run
+
 ```bash
-gcc -Wall -Wextra -std=c99 -I. -O2 $(pkg-config --cflags gtk+-3.0) main.c energy.c -o SmartEnergyTracker.exe $(pkg-config --libs gtk+-3.0) -lm
+./SmartEnergyTracker
+```
+
+### 4. Run tests
+
+```bash
+make test
+```
+
+> Targets and the binary name above follow the standard Makefile layout. Adjust them if yours differ.
+
+---
+
+## Project Structure
+
+```
+DSAproject/
+├── include/                 # Header files
+│   ├── appliance.h
+│   ├── linkedlist.h
+│   ├── calculations.h
+│   ├── searching.h
+│   ├── sorting.h
+│   ├── statistics.h
+│   ├── fileio.h
+│   ├── validation.h
+│   ├── recommendations.h
+│   ├── reports.h
+│   └── gui.h
+├── src/                     # Implementations (+ main.c)
+├── tests/
+│   └── test.c               # Verifies the sample data above
+├── assets/                  # README animations
+├── appliances.dat           # Saved data (auto-created)
+├── Makefile                 # Builds with pkg-config
+└── README.md
 ```
 
 ---
 
-## 🧪 Benchmark Test Case (Hostel Room Example)
+## How to Use
 
-To test the accuracy of the application, enter the following sample hostel room appliances:
-
-| Appliance Name | Quantity | Power (W) | Usage (Hours/Day) | Daily Energy (kWh) | Monthly Energy (30 days) | Est. Cost (@ ₹8/unit) |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Ceiling Fan** | 2 | 75 W | 10.0 hrs | 1.500 kWh | 45.00 kWh | ₹360.00 |
-| **LED Bulb** | 3 | 9 W | 6.0 hrs | 0.162 kWh | 4.86 kWh | ₹38.88 |
-| **Air Conditioner** | 1 | 1500 W | 6.0 hrs | 9.000 kWh | 270.00 kWh | ₹2,160.00 |
-| **Laptop Charger** | 1 | 65 W | 4.0 hrs | 0.260 kWh | 7.80 kWh | ₹62.40 |
-| **Mobile Charger** | 2 | 10 W | 1.0 hr | 0.020 kWh | 0.60 kWh | ₹4.80 |
-
-### Expected Summary Results:
-* **Total Registered:** 5 appliances (9 units)
-* **Total Daily Energy:** `10.942 kWh / day`
-* **Total Monthly Energy:** `328.26 kWh / month`
-* **Estimated Monthly Bill:** `₹ 2,626.08`
-* **Highest Consumer:** `Air Conditioner (9.000 kWh/day - 82.3% of total bill)`
+1. **Add appliances**: enter name, wattage, quantity, and hours per day.
+2. **Set your tariff**: type your rate per unit (for example, 8).
+3. **View results**: daily and monthly kWh, plus the estimated bill.
+4. **Sort and search**: rank by consumption or find a specific device.
+5. **Read the tips**: follow the recommendations to cut your bill.
+6. **Export** a report or **undo** a mistake at any time.
 
 ---
 
-## ⚠️ Project Limitations & PBL Context
+## Roadmap
 
-* **Estimation Nature:** This application calculates energy based on rated appliance wattage and average user-specified hours. Real-world consumption differs because compressors (ACs, refrigerators) cycle on and off based on thermostats.
-* **Billing Tiers:** Real utility bills often include progressive slab tariffs, fixed meter charges, and fuel surcharges.
-* **PBL Educational Goal:** The project fulfills Problem-Based Learning (PBL) by creating an intuitive tool that builds consumer awareness regarding phantom loads and high-consumption appliances.
+- [x] Linked-list storage with file persistence
+- [x] Hand-written Merge Sort and Linear Search
+- [x] GTK GUI with bill estimator
+- [x] Stack-based undo
+- [x] Rule-based recommendations
+- [ ] Lightweight charts inside the GUI
+- [ ] CSV import and export
+- [ ] Multiple tariff slabs (telescopic billing)
+- [ ] Monthly history and comparison
+- [ ] Dark mode
+
+---
+
+## What I Learned
+
+- Designing a modular C project with clean header and source separation
+- Managing memory safely with manual allocation and cleanup
+- Implementing classic algorithms without library shortcuts
+- Building an event-driven GUI with GTK callbacks
+- Writing tests against known values to prove correctness
+
+---
+
+## Contributing
+
+Contributions, ideas, and bug reports are welcome.
+
+1. Fork the repo
+2. Create a branch: `git checkout -b feature/amazing-idea`
+3. Commit: `git commit -m "Add amazing idea"`
+4. Push: `git push origin feature/amazing-idea`
+5. Open a Pull Request
+
+---
+
+## License
+
+Distributed under the **MIT License**. See `LICENSE` for details.
+
+---
+
+## Author
+
+**Abhinav Jha**
+B.Tech CSE, Jaypee University of Information Technology (JUIT), Solan
+
+[![GitHub](https://img.shields.io/badge/GitHub-abhinavxjha-181717?style=flat-square&logo=github)](https://github.com/abhinavxjha)
+[![Portfolio](https://img.shields.io/badge/Portfolio-myportfolio-43e97b?style=flat-square)](https://github.com/abhinavxjha/myportfolio)
+
+<div align="center">
+
+### If this project helped or inspired you, give it a star! ⭐
+
+*Save energy. Learn DSA. Build things.* ⚡
+
+</div>
